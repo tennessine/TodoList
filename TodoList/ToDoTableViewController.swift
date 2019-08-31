@@ -11,20 +11,22 @@ import UIKit
 class ToDoTableViewController: UITableViewController {
     
     var toDos = [ToDo]()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        let toDo1 = ToDo()
-        toDo1.name = "Walk the dog"
-        toDo1.important = false
-        
-        let toDo2 = ToDo()
-        toDo2.name = "Buy milk"
-        toDo2.important = true
-        
-        toDos.append(toDo1)
-        toDos.append(toDo2)
+    
+    override func viewWillAppear(_ animated: Bool) {
+        getToDo()
+    }
+    
+    func getToDo() {
+        if let context = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext {
+            
+            if let toDosFromCoreData = try? context.fetch(ToDo.fetchRequest()) {
+                
+                if let toDos = toDosFromCoreData as? [ToDo] {
+                    self.toDos = toDos
+                    tableView.reloadData()
+                }
+            }
+        }
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -38,7 +40,9 @@ class ToDoTableViewController: UITableViewController {
         let currentToDo = toDos[indexPath.row]
         
         if currentToDo.important {
-            cell.textLabel?.text = "❗️" + currentToDo.name
+            if let name = currentToDo.name {
+                cell.textLabel?.text = "❗️" + name
+            }
         } else {
             cell.textLabel?.text = currentToDo.name
         }

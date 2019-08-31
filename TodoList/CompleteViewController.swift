@@ -17,10 +17,16 @@ class CompleteViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        nameLabel.text = toDo.name
+        if let name = toDo.name {
+            nameLabel.text = name
+        }
     }
 
     @IBAction func completeTapped(_ sender: Any) {
-        
+        if let context = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext {
+            context.delete(toDo)
+            
+        navigationController?.popViewController(animated: true)
+        }
     }
 }

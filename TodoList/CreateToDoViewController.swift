@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class CreateToDoViewController: UIViewController {
 
@@ -17,18 +18,21 @@ class CreateToDoViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
     }
     
     @IBAction func addTapped(_ sender: Any) {
-        let newToDo = ToDo()
-        newToDo.important = importantSwitch.isOn
-        if let name = nameTextField.text {
-            newToDo.name = name
+        
+        if let context = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext {
+            
+            let newToDo = ToDo(context: context)
+            
+            newToDo.important = importantSwitch.isOn
+            if let name = nameTextField.text {
+                newToDo.name = name
+            }
+            
+            (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
         }
-        toDoTableVC!.toDos.append(newToDo)
-        toDoTableVC!.tableView.reloadData()
         
         navigationController?.popViewController(animated: true)
     }
